@@ -50,16 +50,22 @@ const Flashcard = () => {
   };
 
   const speakJapanese = () => {
-    const utterance = new SpeechSynthesisUtterance();
-    utterance.lang = 'ja-JP';
-    const currentCard = flashcards[currentIndex] || {};
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance();
+      utterance.lang = 'ja-JP';
+      const currentCard = flashcards[currentIndex] || {};
 
-    // Yapon yozuvidagi belgilarni ajratib olish
-    const japaneseText = (currentCard.front.match(/[\u3040-\u30FF\u4E00-\u9FFF]+/g) || []).join(' ');
+      // Yapon yozuvidagi belgilarni ajratib olish
+      const japaneseText = (currentCard.front.match(/[\u3040-\u30FF\u4E00-\u9FFF]+/g) || []).join(' ');
 
-    if (japaneseText) {
-      utterance.text = japaneseText;
-      window.speechSynthesis.speak(utterance);
+      if (japaneseText) {
+        utterance.text = japaneseText;
+        window.speechSynthesis.cancel(); // Oldingi ovozni to'xtatish
+        window.speechSynthesis.resume(); // Mobilda ovozni faollashtirish
+        window.speechSynthesis.speak(utterance);
+      }
+    } else {
+      alert("Sizning qurilmangizda ovoz funksiyasi qo‘llab-quvvatlanmaydi.");
     }
   };
 
@@ -69,7 +75,7 @@ const Flashcard = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <div className="max-w-sm w-full p-4 bg-gray-800 shadow-md">
+      <div className="max-w-sm w-full p-4 bg-gray-700 shadow-md">
         <div className="relative bg-gray-500 cursor-pointer" onClick={handleCardClick}>
           <div className="p-6 bg-white text-black text-center">
             <h2 className="text-xl font-medium">
